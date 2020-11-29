@@ -4,8 +4,8 @@ import pyhifiberry
 long_description = open('README.md').read()
 
 setup(
-    name='pyipma',
-    version=pyipma.__version__,
+    name='pyhifiberry',
+    version=pyhifiberry.__version__,
     license='MIT License',
     url='https://github.com/dgomes/pyhifiberry',
     author='Diogo Gomes',
