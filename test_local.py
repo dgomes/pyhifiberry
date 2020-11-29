@@ -23,6 +23,9 @@ async def main():
             await asyncio.sleep(2)
             print(await api.volume("+5"))
             assert current_volume == await api.volume()
+
+
+            print(await api.metadata())
     except audiocontrol2.Audiocontrol2Exception as err:
         print(err) 
         if err.original:
