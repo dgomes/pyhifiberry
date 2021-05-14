@@ -5,7 +5,13 @@ from pyhifiberry import audiocontrol2
 async def main():
     try:
         async with aiohttp.ClientSession() as session:
-            api = audiocontrol2.Audiocontrol2(session)
+            api = audiocontrol2.Audiocontrol2(session, host="192.168.1.150")
+
+            status =  await api.status()
+            print(status)
+            
+            print(await api.metadata())
+            print(await api.volume())
 
             print("Start playing")
             await api.player("play")

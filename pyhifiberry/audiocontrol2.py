@@ -1,7 +1,7 @@
 """API to Hifiberry OS - audiocontrol2"""
-
-import logging
 import json
+import asyncio
+import logging
 import aiohttp
 
 from .consts import (
@@ -25,7 +25,7 @@ class Audiocontrol2Exception(Exception):
     """Exception class for Audiocontrol2."""
 
     def __init__(self, message="Operation not completed", original=None):
-        LOGGER.error(original)
+        LOGGER.error("Audiocontrol2Exception %s caused by: %s", message, original)
         self.original = original
         self.message = message
         super().__init__(message)
@@ -46,16 +46,19 @@ class Audiocontrol2:
             headers = {"Authtoken": self.authtoken}
 
         url = api_template.format(self.base_url, endpoint)
+        LOGGER.debug("request %s %s with %s", method, url, json)
 
         try:
             async with self.websession.request(
-                method, url, headers=headers, json=json,
+                method, url, headers=headers, json=json, timeout=10
             ) as res:
                 if res.status != 200:
                     raise Audiocontrol2Exception(f"Couldn't request {url}, status: {res.status}")
                 if res.content_type == "application/json":
                     return await res.json()
                 return await res.text()
+        except asyncio.TimeoutError as err:
+            raise Audiocontrol2Exception("Timeout connecting to Hifiberry host.", err)
         except aiohttp.ClientError as err:
             raise Audiocontrol2Exception("Could not connect to Hifiberry host.", err)
         except json.decoder.JSONDecodeError as err:
@@ -73,13 +76,17 @@ class Audiocontrol2:
         else:
             raise Audiocontrol2Exception("Unknown player command")
 
+    async def status(self):
+        r = await self._request("GET", API_PLAYER, "status")
+        return r
+
     async def player_activate(self, playername):
         r = await self._request("POST", API_PLAYER_ACTIVE, playername)
         return r is not None
 
     async def metadata(self):
         r = await self._request("GET", API_TRACK, "metadata")
-        return r
+        return json.loads(r)
 
     async def lastfm(self, action):
         if action in ["love", "unlove"]:
