@@ -9,7 +9,10 @@ async def main():
 
             status =  await api.status()
             print(status)
-            
+           
+            print(await api.info())
+            return
+ 
             print(await api.metadata())
             print(await api.volume())
 

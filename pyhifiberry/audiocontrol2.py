@@ -15,6 +15,7 @@ from .consts import (
     API_TRACK_GET,
     API_TRACK_POST,
     API_VOLUME,
+    API_SYSTEM,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ class Audiocontrol2:
 
         try:
             async with self.websession.request(
-                method, url, headers=headers, json=json, timeout=10
+                method, url, headers=headers, json=json, timeout=2
             ) as res:
                 if res.status != 200:
                     raise Audiocontrol2Exception(f"Couldn't request {url}, status: {res.status}")
@@ -75,6 +76,10 @@ class Audiocontrol2:
 
         else:
             raise Audiocontrol2Exception("Unknown player command")
+
+    async def info(self):
+        r = await self._request("GET", API_SYSTEM, "info")
+        return r
 
     async def status(self):
         r = await self._request("GET", API_PLAYER, "status")

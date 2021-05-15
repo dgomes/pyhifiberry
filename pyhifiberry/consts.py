@@ -13,3 +13,5 @@ API_TRACK_POST = ["love", "unlove"]
 API_TRACK_GET = ["metadata"]
 
 API_VOLUME = "{}/api/volume"
+
+API_SYSTEM = "{}/api/system/{}"
