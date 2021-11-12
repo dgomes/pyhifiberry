@@ -19,7 +19,7 @@ from .consts import (
 )
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
+LOGGER.setLevel(logging.INFO)
 
 
 class Audiocontrol2Exception(Exception):
