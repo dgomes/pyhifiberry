@@ -107,3 +107,6 @@ class Audiocontrol2:
 
         r = await self._request("POST", API_VOLUME, json={"percent": str(vol)})
         return r
+
+    async def poweroff(self):
+        await self._request("POST", API_SYSTEM, "poweroff")
