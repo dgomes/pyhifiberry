@@ -3,7 +3,7 @@ import asyncio
 from typing import Any
 
 import pytest
-from pyhifiberry.audiocontrol2sio import Audiocontrol2SIO, Metadata
+from pyhifiberry.audiocontrol2sio import Audiocontrol2SIO
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ async def test_metadata_callback(audiocontrol: Audiocontrol2SIO):
     await audiocontrol.player.next()
     await asyncio.sleep(1)
 
-    assert cb.metadata
+    assert cb.metadata.get('title') == audiocontrol.metadata.title
 
 @pytest.mark.asyncio
 async def test_player_status(audiocontrol: Audiocontrol2SIO):

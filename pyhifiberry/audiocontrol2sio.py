@@ -77,20 +77,32 @@ class Metadata(AsyncClientNamespace):
         super().__init__(namespace="/metadata")
         self.sio = sio
         self.callbacks = set()
+        self.title = None
+        self.artist = None
+        self.albumTitle = None
+        self.albumArtist = None
+        self.tracknumber = None
+        self.artUrl = None
+        self.externalArtUrl = None
+        self.playerName = None
 
     def add_callback(self, callback):
         self.callbacks.add(callback)
 
-    async def on_update(self, data):
-        _LOGGER.info("update")
+    async def on_update(self, meta):
+        self._set_metadata(meta)
         for callback in self.callbacks:
-            callback(data)
-
-    def set_metadata(self, metadata):
-        self.metadata = metadata
+            callback(meta)
 
     async def get_metadata(self):
-        return await self.sio.call("get", namespace="/metadata")
+        meta = await self.sio.call("get", namespace="/metadata")
+        self._set_metadata(meta)
+        return meta
+
+    def _set_metadata(self, meta):
+        for field, value in meta.items():
+            setattr(self, field, value)
+
 
 class Volume(AsyncClientNamespace):
 
@@ -103,7 +115,6 @@ class Volume(AsyncClientNamespace):
         self.callbacks.add(callback)
 
     async def on_update(self, data):
-        _LOGGER.info("update")
         for callback in self.callbacks:
             callback(data)
 
