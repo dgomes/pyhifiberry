@@ -18,7 +18,7 @@ class Audiocontrol2SIO:
 
     @classmethod
     async def connect(cls, host=DEFAULT_HOST, port=DEFAULT_PORT, wait_timeout=10):
-        _LOGGER.info("TRYING TO CONNECT")
+        _LOGGER.debug("TRYING TO CONNECT")
         sio = AsyncClient()
         audiocontrol = Audiocontrol2SIO(sio)
         sio.register_namespace(audiocontrol.metadata)
@@ -85,12 +85,15 @@ class Metadata(AsyncClientNamespace):
         self.artUrl = None
         self.externalArtUrl = None
         self.playerName = None
+        self.playerState = None
+        self.positionupdate = None
 
     def add_callback(self, callback):
         self.callbacks.add(callback)
 
     async def on_update(self, meta):
         self._set_metadata(meta)
+        _LOGGER.debug("updated metadata: %s", meta)
         for callback in self.callbacks:
             callback(meta)
 
@@ -110,16 +113,29 @@ class Volume(AsyncClientNamespace):
         super().__init__(namespace="/volume")
         self.sio = sio
         self.callbacks = set()
+        self.percent = None
 
     def add_callback(self, callback):
         self.callbacks.add(callback)
 
-    async def on_update(self, data):
+    async def on_connect(self):
+        _LOGGER.debug('on connect volume')
+        await self.get()
+
+    async def on_update(self, volume):
+        _LOGGER.debug("update volume %s", volume)
+        self.percent = volume['percent']
         for callback in self.callbacks:
-            callback(data)
+            callback(volume)
 
     async def get(self):
-        return await self.sio.call("get", namespace="/volume")
+        _LOGGER.debug("getting volume")
+        volume = await self.sio.call("get", namespace="/volume")
+        self.percent = volume['percent']
+        return volume
 
-    async def set(self, volume):
-        return await self.sio.call("set", volume, namespace="/volume")
+    async def set(self, volume: int):
+        _LOGGER.debug("setting volume: %s", volume)
+        response =  await self.sio.call("set", {'percent': volume}, namespace="/volume")
+        self.percent = response['percent']
+        return response
