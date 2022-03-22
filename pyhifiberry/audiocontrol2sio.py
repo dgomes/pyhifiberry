@@ -69,6 +69,9 @@ class Player(AsyncClientNamespace):
         return await self.sio.call("status", namespace="/player")
 
     async def playing(self):
+        """The audiocontrol2 api has an undocumented endpoint /api/player/playing returning 
+        whether or not any player is active.
+        """
         return await self.sio.call("playing", namespace="/player")
 
 class Metadata(AsyncClientNamespace):
