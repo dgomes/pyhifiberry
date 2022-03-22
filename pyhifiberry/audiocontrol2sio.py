@@ -27,12 +27,12 @@ class Audiocontrol2SIO:
 
         @sio.event
         async def connect():
-            _LOGGER.info("audiocontroller connected to host %s", host)
+            _LOGGER.debug("audiocontroller connected to host %s", host)
             audiocontrol.connected = True
 
         @sio.event
         async def disconnect():
-            _LOGGER.info("audiocontroller disconnected from host %s", host)
+            _LOGGER.debug("audiocontroller disconnected from host %s", host)
             audiocontrol.connected = False
 
         await sio.connect(f'http://{host}:{port}', wait_timeout=wait_timeout)
