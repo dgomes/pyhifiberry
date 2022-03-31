@@ -39,7 +39,7 @@ class Audiocontrol2:
         self.base_url = f"http://{host}:{port}"
         self.authtoken = authtoken
 
-    async def _request(self, method, api_template, endpoint="", json={}):
+    async def _request(self, method, api_template, endpoint="", json_dict={}):
         """Issue API requests."""
 
         headers = {}
@@ -47,11 +47,11 @@ class Audiocontrol2:
             headers = {"Authtoken": self.authtoken}
 
         url = api_template.format(self.base_url, endpoint)
-        LOGGER.debug("request %s %s with %s", method, url, json)
+        LOGGER.debug("request %s %s with %s", method, url, json_dict)
 
         try:
             async with self.websession.request(
-                method, url, headers=headers, json=json, timeout=2
+                method, url, headers=headers, json=json_dict, timeout=2
             ) as res:
                 if res.status != 200:
                     raise Audiocontrol2Exception(f"Couldn't request {url}, status: {res.status}")
