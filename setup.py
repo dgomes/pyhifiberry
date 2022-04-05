@@ -18,6 +18,7 @@ setup(
     platforms='any',
     install_requires=[
         'aiohttp',
+        'python-socketio[asyncio_client]'
       ],
     classifiers=[
         'License :: OSI Approved :: MIT License',
